@@ -31,6 +31,8 @@ namespace cstech
         public int konumj = 1;
         public string deger;   // Sayının başına 0 değeri gelince int dönüşümünde almıyor bu yüzden değişken kullandım
         public List<Tahminler> Tahminler = new List<Tahminler>();   // Kullanıcının tahminlerini DataGridViewRow'da göstermek için
+        public int kullaniciBulunanSayi;
+        public int kullaniciBulunanSayiKonum = 0;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -143,7 +145,6 @@ namespace cstech
             textBox2.Clear();
             textBox3.Clear();
 
-            //char swap;
             int kontrol = bilgisayarGonderilenArti + bilgisayarGonderilenEksi;
             deger = bilgisayarTahminEttigiSayi.ToString();
             if (deger.Length == 3)
@@ -237,6 +238,7 @@ namespace cstech
                 }
                 else
                 {
+                    kullaniciBulunanSayi = bilgisayarTahminEttigiSayi;
                     artiBilgisi = bilgisayarGonderilenArti;
                     yerDegistirme(konumi, konumj);
                 }
@@ -253,14 +255,14 @@ namespace cstech
         private void ortak(int geldigiYer)
         {
             char[] tahminDegeri;
-            if (bilgisayarTahminEttigiSayi.ToString().Length==3)   // Tahmin edilen sayı 0 ile başlıyor mu kontrolü
+            if (bilgisayarTahminEttigiSayi.ToString().Length == 3)   // Tahmin edilen sayı 0 ile başlıyor mu kontrolü
             {
                 deger = "0" + bilgisayarTahminEttigiSayi.ToString();
                 tahminDegeri = deger.ToCharArray();
             }
             else
                 tahminDegeri = bilgisayarTahminEttigiSayi.ToString().ToCharArray();
-            
+
             if (geldigiYer == 1 || geldigiYer == 2 || geldigiYer == 3) // Büyük, küçük ve ilk tahmin durumu
             {
                 oncekiDeger = Convert.ToInt32(tahminDegeri[elemanKonumu].ToString());
@@ -294,6 +296,7 @@ namespace cstech
         /// <param name="konumj">Yerdeğiştirme işleminde sürekli sona gidip dönen sayı</param>
         private void yerDegistirme(int konumi, int konumj)   // Swap işlemini burada yapıyor
         {
+
             char[] tahminDegeri = deger.ToCharArray();
             char swap = tahminDegeri[konumi];
             tahminDegeri[konumi] = tahminDegeri[konumj];
@@ -306,19 +309,27 @@ namespace cstech
         /// Sayıyı char dizisine atarak yapılan işlemlerden sonra sayıyı birleştirip int'a çeviriyor
         /// </summary>
         /// <param name="tahminDegeri">Sayının char dizisi hali</param>
-        private void bilgisayarTahminiYazdırma(char[] tahminDegeri)
+        private void bilgisayarTahminiYazdırma(char[] tahminDeger)
         {
+            char[] tahminDegeri = bilgisayarTahminEttigiSayi.ToString().ToCharArray();
             string sayi = "";
             for (int i = 0; i < 4; i++)
             {
-                sayi = sayi + tahminDegeri[i].ToString();
+                sayi = sayi + tahminDeger[i].ToString();
             }
             bilgisayarTahminEttigiSayi = Convert.ToInt32(sayi);
-            deger = sayi;
+            if (bilgisayarTahminEttigiSayi.ToString().Length == 3)   // Tahmin edilen sayı 0 ile başlıyor mu kontrolü
+            {
+                deger = "0" + bilgisayarTahminEttigiSayi.ToString();
+                tahminDegeri = deger.ToCharArray();
+            }
+            else
+                tahminDegeri = bilgisayarTahminEttigiSayi.ToString().ToCharArray();
+            deger = tahminDegeri.ToString();
         }
 
         /// <summary>
-        /// Bilgisayar için tahminlerin bitip bitmediğini kontrol ediyor
+        /// Bilgisayar için tahminlerin bitip bitmediğini kontrol ediyor ve son konuma gelince sayıların yerini değiştirip baştan başlıyor
         /// </summary>
         private void sonIhtimalMi()
         {
@@ -326,6 +337,17 @@ namespace cstech
             {
                 konumi = 0;
                 konumj = 1;
+                char[] bulunanSayiIlkHali = kullaniciBulunanSayi.ToString().ToCharArray();   // Bulunan sayımızda değişik sayıları oluşturmak için kullanılıyor
+                char degisme = bulunanSayiIlkHali[kullaniciBulunanSayiKonum];
+                bulunanSayiIlkHali[kullaniciBulunanSayiKonum] = bulunanSayiIlkHali[kullaniciBulunanSayiKonum + 1];
+                bulunanSayiIlkHali[kullaniciBulunanSayiKonum + 1] = degisme;
+                kullaniciBulunanSayiKonum++;
+                if (kullaniciBulunanSayiKonum==3)
+                {
+                    MessageBox.Show("Tebrikler Oyunu Kullanıcı Kazandı");
+                    Environment.Exit(0);
+                }
+                bilgisayarTahminiYazdırma(bulunanSayiIlkHali);
             }
             else if (konumj == 4 && konumi != 3)
             {
