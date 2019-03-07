@@ -36,6 +36,7 @@ namespace cstech
         protected int olmayanSayiKontrol = 0;
         protected int eskiHali = 0;
         protected int kontrolDegistiMi = 0;
+        protected int rakamlarTamamMi = 0;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -162,7 +163,7 @@ namespace cstech
                 return;
             }
 
-            if (artiEksiSayisi != 4 && kontrol != 4)
+            if (artiEksiSayisi != 4 && kontrol != 4 && rakamlarTamamMi == 0)
             {
                 if (artiEksiSayisi != -1)
                 {
@@ -284,6 +285,7 @@ namespace cstech
                         bilgisayarTahminiYazdırma(bulunan);
                     }
                 }
+                rakamlarTamamMi = 1;
             }
             label6.Text = "";
             kullanici.Visible = true;
